@@ -236,6 +236,15 @@ server {
     add_header X-Robots-Tag "none" always;
     add_header X-XSS-Protection "1; mode=block" always;
 
+    # Mozilla
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
+    ssl_session_tickets off;
+    ssl_protocols TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    ssl_stapling on;
+    ssl_stapling_verify on;
+
     # Remove X-Powered-By, which is an information leak
     fastcgi_hide_header X-Powered-By;
 
