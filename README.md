@@ -1,9 +1,22 @@
+# Nextcloud Low Spec Server
+
+This is my personal setup notes to install Nextcloud and OnlyOffice Document Server together on the same server.
+
+## Vultr High Frequency Compute:
+Pricing: $6 USD per month    
+Storage SSD: 32GB  
+CPU: 1  
+RAM: 1024 MB  
+Bandwith: 1 TB  
+Geekbench Score: 4883
+
 SOURCES: 
 https://www.marksei.com/how-to-install-nextcloud-18-on-ubuntu/
 https://www.howtoforge.com/tutorial/ubuntu-nginx-nextcloud/
 https://docs.nextcloud.com/server/stable/admin_manual/installation/example_ubuntu.html
 https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
 https://docs.nextcloud.com/server/18/admin_manual/configuration_server/caching_configuration.html
+
 
 sudo apt update && sudo apt upgrade
 
