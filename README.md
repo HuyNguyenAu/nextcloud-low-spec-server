@@ -78,7 +78,6 @@ FLUSH PRIVILEGES;
 sudo touch /etc/apache2/sites-available/nextcloud.conf
 sudo nano /etc/apache2/sites-available/nextcloud.conf
 ```
-The config file should look something like below:
 ```
 <VirtualHost 127.0.0.1:8080>
   DocumentRoot /var/www/nextcloud/
@@ -142,7 +141,7 @@ env[TMP] = /tmp
 env[TMPDIR] = /tmp
 env[TEMP] = /tmp
 ```
-Then restart the fpm:
+Then restart the FPM:
 ```
 sudo systemctl restart php7.2-fpm
 ```
@@ -373,7 +372,6 @@ Edit Nextcloud config to add in Redis:
 ```
 sudo nano /var/www/nextcloud/config/config.php
 ```
-The config file should like 
 ```
 'log_type' => 'file',
 'logfile' => '/var/log/nextcloud.log',
