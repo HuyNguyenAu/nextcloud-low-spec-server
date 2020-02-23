@@ -421,6 +421,8 @@ sudo ufw status
 ```
 
 ## Fixing Errors/Warnings
+Consider placing the data directory outside **/var/www/**.
+Fix MySQL warnings:
 ```
 sudo -u www-data php occ db:add-missing-indices
 sudo -u www-data php nextcloud/occ db:convert-filecache-bigint
