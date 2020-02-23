@@ -72,8 +72,38 @@ CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON nextcloud.* TO 'user'@'localhost';
 FLUSH PRIVILEGES;
 ```
+## TLS and HTTPS
+Install Certbot:
+```
+sudo apt install certbot
+```
+Get the cert:
+```
+sudo certbot -d cloud.example.com --manual --preferred-challenges dns certonly
+```
+## Setting Up Apache
+Set Apache to listent to port 8080.
+```
+sudo nano /etc/apache2/ports.conf
+```
+```
+# If you just change the port or add more ports here, you will likely also
+# have to change the VirtualHost statement in
+# /etc/apache2/sites-enabled/000-default.conf
 
-## Create the Nextcloud Config
+Listen 8080
+
+#<IfModule ssl_module>
+#        Listen 443
+#</IfModule>
+
+#<IfModule mod_gnutls.c>
+#        Listen 443
+#</IfModule>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+```
+Create a new Nextcloud config:
 ```
 sudo touch /etc/apache2/sites-available/nextcloud.conf
 sudo nano /etc/apache2/sites-available/nextcloud.conf
@@ -149,42 +179,11 @@ And check if it is running:
 ```
 netstat -tap
 ```
-## TLS and HTTPS
-Install Certbot:
-```
-sudo apt install certbot
-```
-Get the cert:
-```
-sudo certbot -d cloud.example.com --manual --preferred-challenges dns certonly
-```
-## Setting Up Apache
-Set Apache to listent to port 8080.
-```
-sudo nano /etc/apache2/ports.conf
-```
-```
-# If you just change the port or add more ports here, you will likely also
-# have to change the VirtualHost statement in
-# /etc/apache2/sites-enabled/000-default.conf
-
-Listen 8080
-
-#<IfModule ssl_module>
-#        Listen 443
-#</IfModule>
-
-#<IfModule mod_gnutls.c>
-#        Listen 443
-#</IfModule>
-
-# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
-```
 Then restart Apache:
 ```
 sudo systemctl restart apache2
 ```
-Setting up NGINX Reverse Proxy:
+##Setting up NGINX Reverse Proxy:
 Install NGINX:
 ```
 sudo apt install nginx
@@ -412,6 +411,8 @@ sudo ufw enable
 sudo ufw status
 ```
 
-## Fixing Errors
+## Fixing Errors/Warnings
+```
 sudo -u www-data php occ db:add-missing-indices
 sudo -u www-data php nextcloud/occ db:convert-filecache-bigint
+```
