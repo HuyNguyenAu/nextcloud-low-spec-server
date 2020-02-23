@@ -183,7 +183,7 @@ Then restart Apache:
 ```
 sudo systemctl restart apache2
 ```
-##Setting up NGINX Reverse Proxy:
+## Setting up NGINX Reverse Proxy:
 Install NGINX:
 ```
 sudo apt install nginx
