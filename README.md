@@ -18,10 +18,10 @@ https://docs.nextcloud.com/server/stable/admin_manual/installation/source_instal
 https://docs.nextcloud.com/server/18/admin_manual/configuration_server/caching_configuration.html
 
 
-## Update Server:
+## Update Server
 `sudo apt update && sudo apt upgrade`
 
-## Install Required Dependencies:
+## Install Required Dependencies
 ```
 sudo apt-get install apache2 mariadb-server libapache2-mod-php7.2 php7.2-mysql php7.2-fpm
 sudo apt-get install php7.2-gd php7.2-json php7.2-mysql php7.2-curl php7.2-mbstring
@@ -40,7 +40,7 @@ Then move it to the **/var/www/** directory.
 sudo mv nextcloud/ /var/www/
 ```
 
-## Set Permissions To Nextcloud Directory:
+## Set Permissions To Nextcloud Directory
 Check the groups the user is in:
 ```
 groups
@@ -58,7 +58,7 @@ ls -al /var/www/nextcloud/*
 ls -al /var/www/nextcloud
 ```
 
-## Setup MariaDB:
+## Setup MariaDB
 ```
 sudo mysql_secure_installation
 ```
@@ -73,7 +73,7 @@ GRANT ALL PRIVILEGES ON nextcloud.* TO 'user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-## Create the Nextcloud config:
+## Create the Nextcloud Config
 ```
 sudo touch /etc/apache2/sites-available/nextcloud.conf
 sudo nano /etc/apache2/sites-available/nextcloud.conf
@@ -106,7 +106,7 @@ Enable the config and disable the default Apache config:
 sudo a2ensite nextcloud
 sudo a2dissite 000-default
 ```
-Install
+Enable mods:
 ```
 sudo a2enmod rewrite headers env dir mime
 ```
@@ -122,7 +122,14 @@ sudo nano /etc/php/7.2/fpm/php.ini
 ```
 date.timezone = Australia/Melbourne
 ```
-Set 
+Disable path info:
+```
+sudo nano /etc/php/7.2/cli/php.ini
+```
+```
+cgi.fix_pathinfo=0
+```
+Enable pass enviroment variables and limit extensions:
 ```
 sudo nano /etc/php/7.2/fpm/pool.d/www.conf
 ```
@@ -135,14 +142,29 @@ env[TMP] = /tmp
 env[TMPDIR] = /tmp
 env[TEMP] = /tmp
 ```
+Then restart the fpm:
+```
 sudo systemctl restart php7.2-fpm
+```
+And check if it is running:
+```
 netstat -tap
-
+```
+## TLS and HTTPS
+Install Certbot:
+```
 sudo apt install certbot
+```
+Get the cert:
+```
 sudo certbot -d cloud.example.com --manual --preferred-challenges dns certonly
-
+```
+## Setting Up Apache
+Set Apache to listent to port 8080.
+```
 sudo nano /etc/apache2/ports.conf
-
+```
+```
 # If you just change the port or add more ports here, you will likely also
 # have to change the VirtualHost statement in
 # /etc/apache2/sites-enabled/000-default.conf
@@ -158,14 +180,23 @@ Listen 8080
 #</IfModule>
 
 # vim: syntax=apache ts=4 sw=4 sts=4 sr noet
-
+```
+Then restart Apache:
+```
 sudo systemctl restart apache2
-
+```
+Setting up NGINX Reverse Proxy:
+Install NGINX:
+```
 sudo apt install nginx
+```
+Unlink the default config and create reverse proxy config:
+```
 sudo unlink /etc/nginx/sites-enabled/default
 sudo touch /etc/nginx/sites-available/reverse-proxy.conf
 sudo nano /etc/nginx/sites-available/reverse-proxy.conf
-
+```
+```
 upstream php-handler {
     server unix:/var/run/php/php7.2-fpm.sock;
 }
@@ -318,17 +349,32 @@ server {
         access_log off;
     }
 }
-
+```
+Link reverse proxy to **sites-enabled**:
+```
 sudo ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
+```
+Test and restart NGINX;
+```
 sudo nginx -t
 sudo systemctl restart nginx
 sudo systemctl enable nginx
-
+```
+Check if it running:
+```
 netstat -tap
-
+```
+## Setup Redis
+Install Redis:
+```
 sudo apt install redis-server php-redis
+```
+Edit Nextcloud config to add in Redis:
+```
 sudo nano /var/www/nextcloud/config/config.php
-
+```
+The config file should like 
+```
 'log_type' => 'file',
 'logfile' => '/var/log/nextcloud.log',
 'logfilemode' => '0640',
@@ -342,17 +388,32 @@ sudo nano /var/www/nextcloud/config/config.php
       'port' => '6379',
       'timeout' => '3',
     ],
-
+```
+## Finishing Touches
+Set the ownership of the sessions folder to **www-data**:
+```
 sudo chown www-data:www-data /var/lib/php/sessions/
+```
+Restart Apache:
+```
 sudo systemctl restart apache2
+```
 
+## Firewall
+Allow the required protocols through:
+```
 sudo ufw allow 'OpenSSH'
 sudo ufw allow 'HTTP'
 sudo ufw allow 'HTTPS'
 sudo ufw allow 'Nginx Full'
+```
+Check if the firewall rules and enable it:
+```
 sudo ufw status
 sudo ufw enable
 sudo ufw status
+```
 
+## Fixing Errors
 sudo -u www-data php occ db:add-missing-indices
 sudo -u www-data php nextcloud/occ db:convert-filecache-bigint
