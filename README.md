@@ -22,13 +22,13 @@ https://docs.nextcloud.com/server/18/admin_manual/configuration_server/caching_c
 `sudo apt update && sudo apt upgrade`
 
 ## Install Required Dependencies:
-sudo apt-get install apache2 mariadb-server libapache2-mod-php7.2 php7.2-mysql php7.2-fpm
-sudo apt-get install php7.2-gd php7.2-json php7.2-mysql php7.2-curl php7.2-mbstring
-sudo apt-get install php7.2-intl php-imagick php7.2-xml php7.2-zip
+`sudo apt-get install apache2 mariadb-server libapache2-mod-php7.2 php7.2-mysql php7.2-fpm`
+`sudo apt-get install php7.2-gd php7.2-json php7.2-mysql php7.2-curl php7.2-mbstring`
+`sudo apt-get install php7.2-intl php-imagick php7.2-xml php7.2-zip`
 
 ## Download Nextcloud Package:
-wget https://download.nextcloud.com/server/releases/nextcloud-18.0.1.tar.bz2
-tar -xvjf nextcloud-18.0.1.tar.bz2
+`wget https://download.nextcloud.com/server/releases/nextcloud-18.0.1.tar.bz2`
+`tar -xvjf nextcloud-18.0.1.tar.bz2`
 
 sudo mv nextcloud/ /var/www/
 
