@@ -29,10 +29,16 @@ sudo apt-get install php7.2-intl php-imagick php7.2-xml php7.2-zip
 ```
 
 ## Download Nextcloud Package:
-`wget https://download.nextcloud.com/server/releases/nextcloud-18.0.1.tar.bz2`
-`tar -xvjf nextcloud-18.0.1.tar.bz2`
+Download and extract the nextcloud package.
+```
+wget https://download.nextcloud.com/server/releases/nextcloud-18.0.1.tar.bz2
+tar -xvjf nextcloud-18.0.1.tar.bz2
+```
 
+Then move it to the **/var/www/** directory.
+```
 sudo mv nextcloud/ /var/www/
+```
 
 groups
 sudo chown www-data:www-data nextcloud/
