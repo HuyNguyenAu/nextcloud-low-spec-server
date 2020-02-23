@@ -40,24 +40,46 @@ Then move it to the **/var/www/** directory.
 sudo mv nextcloud/ /var/www/
 ```
 
+## Set Permissions To Nextcloud Directory:
+Check the groups the user is in:
+```
 groups
+```
+Set the user and group ownership to **www-data** for everything inside the **nextcloud** directory and the folder itself:
+```
 sudo chown www-data:www-data nextcloud/
 sudo chown -R www-data:www-data nextcloud/*
 sudo chown -R www-data:www-data nextcloud/.htaccess
 sudo chown -R www-data:www-data nextcloud/.user.ini
+```
+Then check to see if the ownership is correct:
+```
+ls -al /var/www/nextcloud/*
 ls -al /var/www/nextcloud
+```
 
+## Setup MariaDB:
+```
 sudo mysql_secure_installation
+```
+Create the database and user. Grant the account with the required privileges.
+```
 sudo mysql -u root -p
-
+```
+```
 CREATE DATABASE nextcloud;
 CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON nextcloud.* TO 'user'@'localhost';
 FLUSH PRIVILEGES;
+```
 
+## Create the Nextcloud config:
+```
 sudo touch /etc/apache2/sites-available/nextcloud.conf
 sudo nano /etc/apache2/sites-available/nextcloud.conf
-
+```
+The config file should look something like below:
+```
 <VirtualHost 127.0.0.1:8080>
   DocumentRoot /var/www/nextcloud/
   ServerName cloud.example.com
@@ -78,29 +100,41 @@ sudo nano /etc/apache2/sites-available/nextcloud.conf
   ErrorLog /var/log/apache2/error.log
   CustomLog /var/log/apache2/access.log common
 </VirtualHost>
-
+```
+Enable the config and disable the default Apache config:
+```
 sudo a2ensite nextcloud
 sudo a2dissite 000-default
+```
+Install
+```
 sudo a2enmod rewrite headers env dir mime
+```
+Restart Apache and enable it at startup:
+```
 sudo systemctl enable apache2
 sudo systemctl restart apache2
-
+```
+Set the timezone:
+```
 sudo nano /etc/php/7.2/fpm/php.ini
-
+```
+```
 date.timezone = Australia/Melbourne
-
-sudo nano /etc/php/7.2/cli/php.ini
-
-cgi.fix_pathinfo=0
-
+```
+Set 
+```
 sudo nano /etc/php/7.2/fpm/pool.d/www.conf
-
+```
+```
+security.limit_extensions = .php
+...
 env[HOSTNAME] = $HOSTNAME
 env[PATH] = /usr/local/bin:/usr/bin:/bin
 env[TMP] = /tmp
 env[TMPDIR] = /tmp
 env[TEMP] = /tmp
-
+```
 sudo systemctl restart php7.2-fpm
 netstat -tap
 
